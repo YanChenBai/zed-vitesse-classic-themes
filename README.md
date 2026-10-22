@@ -15,12 +15,12 @@ This fork focuses on **translucency**: every theme is drawn on a blurred, partly
 
 | Theme                        | Appearance | Background      |
 | ---------------------------- | ---------- | --------------- |
-| `Vitesse Classic Dark`       | dark       | `#121212` @ 30% |
-| `Vitesse Classic Dark Soft`  | dark       | `#222222` @ 30% |
-| `Vitesse Classic Black`      | dark       | `#000000` @ 30% |
-| `Vitesse Classic Black Soft` | dark       | `#0d0d0d` @ 30% |
-| `Vitesse Classic Light`      | light      | `#ffffff` @ 30% |
-| `Vitesse Classic Light Soft` | light      | `#f1f0e9` @ 30% |
+| `Vitesse Classic Dark`       | dark       | `#121212` @ 80% |
+| `Vitesse Classic Dark Soft`  | dark       | `#222222` @ 80% |
+| `Vitesse Classic Black`      | dark       | `#000000` @ 80% |
+| `Vitesse Classic Black Soft` | dark       | `#0d0d0d` @ 80% |
+| `Vitesse Classic Light`      | light      | `#ffffff` @ 80% |
+| `Vitesse Classic Light Soft` | light      | `#f1f0e9` @ 80% |
 
 `Vitesse Classic Black Soft` is the pure black theme lifted one step (`#000000` → `#0d0d0d`) so it reads softer on high-contrast displays without drifting into the dark grey of `Dark`.
 
@@ -32,7 +32,12 @@ All themes set `"background.appearance": "blurred"`, so the desktop shows throug
 - **Windows** — DWM acrylic. The system *Settings → Personalization → Colors → Transparency effects* toggle must be on.
 - **Linux** — depends on the compositor; when blur is unsupported Zed falls back to plain transparency.
 
-The percentages in the table are the tint strength — the lower the value, the more of the blurred desktop shows through. They are set by `classicBackgroundAlpha` in [`src/styles.ts`](./src/styles.ts).
+The percentages in the table are the tint strength of the window background — the higher the value, the denser the glass. Two constants in [`src/styles.ts`](./src/styles.ts) drive it:
+
+- `classicSurfaceAlpha` — the window root (`background`), and the only tinted layer.
+- `classicOverlayAlpha` — hovers, the active line and the active tab, painted on top of that tint.
+
+Every other surface (`editor.background`, `editor.gutter.background`, `panel.background`, `tab_bar`, `title_bar`, `status_bar`, `toolbar`, `terminal`, …) is emitted as `#RRGGBB00`, which draws nothing at all. Zed paints those surfaces *over* the window background, so tinting them as well stacks two 80% layers into a ~96% opaque one — the editor and both docks would look solid again. With a single tinted layer, the editor, both sidebars and the empty workspace all show exactly the same amount of the blurred desktop.
 
 Only the window surfaces are translucent. Floating UI stays fully opaque so it remains readable over anything behind it:
 

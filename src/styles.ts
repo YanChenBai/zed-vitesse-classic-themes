@@ -3,13 +3,25 @@ import { VitesseThemes } from './colors';
 export type Appearance = 'dark' | 'light';
 export type Variant = 'soft' | 'black' | 'blackSoft' | 'classic';
 
+// How a surface takes part in the classic frosted-glass window:
+// - `clear`  container, draws nothing (keeps the tint single-layered)
+// - `overlay` highlight drawn on top of a tinted surface (light tint)
+// - `opaque` floating UI that must stay readable (menus, popups, dialogs)
+type ColorStyle = 'semi-transparent' | 'opaque' | 'clear' | 'overlay';
+
 type StyleArgs = [Appearance, ...Variant[]];
 
 // Variants that are layered on top of another variant.
 const variantFallbacks: Partial<Record<Variant, Variant>> = { blackSoft: 'black' };
 
-// Alpha applied to the solid background colors in "classic" mode.
-const classicBackgroundAlpha = '4D';
+// In "classic" mode exactly one layer of every pixel is tinted: the surfaces that sit directly
+// on the blurred window. The containers around them (`clear`) and the window root are fully
+// transparent, so two 80% layers can never stack into an opaque one.
+const classicSurfaceAlpha = 'CC';
+
+// Highlights and hovers are painted *on top* of an already tinted surface, so they use a much
+// lighter tint instead of repeating the surface alpha.
+const classicOverlayAlpha = '33';
 
 // "classic" draws a frosted-glass window: `blurred` is macOS vibrancy and Windows acrylic.
 const classicWindowBackground = 'blurred';
@@ -27,13 +39,13 @@ export function getStyle(...args: StyleArgs) {
 		'border.transparent': color('border'),
 		'border.disabled': color('border'),
 		'elevated_surface.background': color('background', 'opaque'),
-		'surface.background': color('background'),
+		'surface.background': color('background', 'clear'),
 		background: color('background'),
-		'element.background': color('activeBackground'),
+		'element.background': color('activeBackground', 'overlay'),
 		'element.hover': color('faded'),
 		'element.active': color('selectionBackgroundInActive'),
 		'element.selected': color('selectionBackgroundInActive'),
-		'element.disabled': color('background'),
+		'element.disabled': color('background', 'clear'),
 		'element.selection_background': color('foreground', 'semi-transparent'),
 		'drop_target.background': color('selectionBackgroundInActive'),
 		'drop_target.border': color('primary'),
@@ -41,7 +53,7 @@ export function getStyle(...args: StyleArgs) {
 		'ghost_element.hover': color('faded'),
 		'ghost_element.active': color('selectionBackgroundInActive'),
 		'ghost_element.selected': color('selectionBackgroundInActive'),
-		'ghost_element.disabled': color('background'),
+		'ghost_element.disabled': color('background', 'clear'),
 		text: color('foreground'),
 		'text.muted': color('secondaryForeground'),
 		'text.placeholder': color('ignored'),
@@ -52,18 +64,18 @@ export function getStyle(...args: StyleArgs) {
 		'icon.disabled': color('ignored'),
 		'icon.placeholder': color('ignored'),
 		'icon.accent': color('primary'),
-		'status_bar.background': color('background'),
-		'title_bar.background': color('background'),
-		'title_bar.inactive_background': color('background'),
-		'toolbar.background': color('activeBackground'),
-		'tab_bar.background': color('background'),
-		'tab.inactive_background': color('background'),
-		'tab.active_background': color('activeBackground'),
-		'search.match_background': color('activeBackground'),
+		'status_bar.background': color('background', 'clear'),
+		'title_bar.background': color('background', 'clear'),
+		'title_bar.inactive_background': color('background', 'clear'),
+		'toolbar.background': color('activeBackground', 'clear'),
+		'tab_bar.background': color('background', 'clear'),
+		'tab.inactive_background': color('background', 'clear'),
+		'tab.active_background': color('activeBackground', 'overlay'),
+		'search.match_background': color('activeBackground', 'overlay'),
 		'search.active_match_background': color('selectionBackground'),
-		'panel.background': color('background'),
+		'panel.background': color('background', 'clear'),
 		'panel.focused_border': color('ignored'), // Split diff squares color
-		'panel.indent_guide': color('activeBackground'),
+		'panel.indent_guide': color('activeBackground', 'overlay'),
 		'panel.indent_guide_active': color('selectionBackground'),
 		'panel.indent_guide_hover': color('selectionBackground'),
 		'panel.overlay_background': color('background', 'opaque'),
@@ -75,7 +87,7 @@ export function getStyle(...args: StyleArgs) {
 		'scrollbar.thumb.hover_background': color('selectionBackgroundActive'),
 		'scrollbar.thumb.active_background': color('selectionBackgroundInActive'),
 		'scrollbar.thumb.border': color('border'),
-		'scrollbar.track.background': color('background'),
+		'scrollbar.track.background': color('background', 'clear'),
 		'scrollbar.track.border': color('border'),
 		'minimap.thumb.background': color('selectionBackground'),
 		'minimap.thumb.hover_background': color('selectionBackgroundActive'),
@@ -83,35 +95,35 @@ export function getStyle(...args: StyleArgs) {
 		'minimap.thumb.border': color('border'),
 
 		'editor.foreground': color('foreground'),
-		'editor.background': color('background'),
-		'editor.gutter.background': color('background'),
-		'editor.subheader.background': color('background'),
-		'editor.active_line.background': color('activeBackground'),
-		'editor.highlighted_line.background': color('background'),
+		'editor.background': color('background', 'clear'),
+		'editor.gutter.background': color('background', 'clear'),
+		'editor.subheader.background': color('background', 'clear'),
+		'editor.active_line.background': color('activeBackground', 'overlay'),
+		'editor.highlighted_line.background': color('background', 'overlay'),
 		'editor.line_number': color('ignored'),
 		'editor.active_line_number': color('activeForeground'),
 		'editor.hover_line_number': color('activeForeground'),
 		'editor.invisible': color('selectionBackground'),
 		'editor.wrap_guide': color('selectionBackground'),
 		'editor.active_wrap_guide': color('selectionBackground'),
-		'editor.document_highlight.read_background': color('activeBackground'),
-		'editor.document_highlight.write_background': color('activeBackground'),
+		'editor.document_highlight.read_background': color('activeBackground', 'overlay'),
+		'editor.document_highlight.write_background': color('activeBackground', 'overlay'),
 		'editor.document_highlight.bracket_background': color('selectionBackground'),
-		'editor.indent_guide': color('activeBackground'),
+		'editor.indent_guide': color('activeBackground', 'overlay'),
 		'editor.indent_guide_active': color('selectionBackground'),
 		'link_text.hover': color('blue'),
 		'debugger.accent': color('red'),
-		'editor.debugger_active_line.background': color('activeBackground'),
+		'editor.debugger_active_line.background': color('activeBackground', 'overlay'),
 
 		'vim.mode.text': color('foreground'),
-		'vim.normal.background': color('background'),
-		'vim.helix_normal.background': color('background'),
-		'vim.visual.background': color('background'),
-		'vim.visual_line.background': color('background'),
-		'vim.helix_select.background': color('background'),
-		'vim.visual_block.background': color('background'),
-		'vim.insert.background': color('background'),
-		'vim.replace.background': color('background'),
+		'vim.normal.background': color('background', 'overlay'),
+		'vim.helix_normal.background': color('background', 'overlay'),
+		'vim.visual.background': color('background', 'overlay'),
+		'vim.visual_line.background': color('background', 'overlay'),
+		'vim.helix_select.background': color('background', 'overlay'),
+		'vim.visual_block.background': color('background', 'overlay'),
+		'vim.insert.background': color('background', 'overlay'),
+		'vim.replace.background': color('background', 'overlay'),
 		'vim.normal.foreground': color('foreground'),
 		'vim.insert.foreground': color('foreground'),
 		'vim.replace.foreground': color('foreground'),
@@ -121,11 +133,11 @@ export function getStyle(...args: StyleArgs) {
 		'vim.helix_normal.foreground': color('foreground'),
 		'vim.helix_select.foreground': color('foreground'),
 
-		'terminal.background': color('background'),
+		'terminal.background': color('background', 'clear'),
 		'terminal.foreground': color('foreground'),
 		'terminal.bright_foreground': color('foreground'),
 		'terminal.dim_foreground': color('foreground'),
-		'terminal.ansi.background': color('background'),
+		'terminal.ansi.background': color('background', 'clear'),
 		'terminal.ansi.black': appearance === 'dark' ? color('foreground') : color('background'),
 		'terminal.ansi.bright_black': appearance === 'dark' ? '#777777' : '#aaaaaa',
 		'terminal.ansi.dim_black': appearance === 'dark' ? '#777777' : '#aaaaaa',
@@ -367,7 +379,7 @@ function colorGetter(appearance: Appearance, variants: Variant[]) {
 		.flatMap((variant) => [variantFallbacks[variant], variant])
 		.filter((variant): variant is Variant => Boolean(variant));
 
-	return (key: keyof typeof VitesseThemes, style?: 'semi-transparent' | 'opaque') => {
+	return (key: keyof typeof VitesseThemes, style?: ColorStyle) => {
 		let value = VitesseThemes[key];
 
 		// Overrides always resolve from the original key, so a later variant (e.g. `blackSoft`)
@@ -387,8 +399,20 @@ function colorGetter(appearance: Appearance, variants: Variant[]) {
 			return color;
 		}
 
-		if (isClassic && (key === 'background' || key === 'activeBackground')) {
-			return withAlpha(color, classicBackgroundAlpha);
+		if (isClassic) {
+			// A container that draws no color of its own, so the tinted surface inside it is the
+			// only layer the user sees.
+			if (style === 'clear') {
+				return withAlpha(color, '00');
+			}
+
+			if (style === 'overlay') {
+				return withAlpha(color, classicOverlayAlpha);
+			}
+
+			if (key === 'background' || key === 'activeBackground') {
+				return withAlpha(color, classicSurfaceAlpha);
+			}
 		}
 
 		// `withAlpha` replaces an existing alpha channel instead of appending to it, so colors
