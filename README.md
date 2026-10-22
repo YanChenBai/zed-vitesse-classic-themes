@@ -37,7 +37,9 @@ The percentages in the table are the tint strength of the window background — 
 - `classicSurfaceAlpha` — the window root (`background`), and the only tinted layer.
 - `classicOverlayAlpha` — hovers, the active line and the active tab, painted on top of that tint.
 
-Every other surface (`editor.background`, `editor.gutter.background`, `panel.background`, `tab_bar`, `title_bar`, `status_bar`, `toolbar`, `terminal`, …) is emitted as `#RRGGBB00`, which draws nothing at all. Zed paints those surfaces *over* the window background, so tinting them as well stacks two 80% layers into a ~96% opaque one — the editor and both docks would look solid again. With a single tinted layer, the editor, both sidebars and the empty workspace all show exactly the same amount of the blurred desktop.
+Every other surface (`editor.background`, `editor.gutter.background`, `panel.background`, `tab_bar`, `toolbar`, `terminal`, …) is emitted as `#RRGGBB00`, which draws nothing at all. Zed paints those surfaces *over* the window background, so tinting them as well stacks two 80% layers into a ~96% opaque one — the editor and both docks would look solid again. With a single tinted layer, the editor, both sidebars and the empty workspace all show exactly the same amount of the blurred desktop.
+
+`title_bar.background` and `status_bar.background` are the exception: they are drawn *outside* the window background (the title bar sits in the native caption layer), so they would otherwise show the raw, untinted backdrop as a bright band. They carry the same `classicSurfaceAlpha` tint themselves, which still means one tinted layer per pixel.
 
 Only the window surfaces are translucent. Floating UI stays fully opaque so it remains readable over anything behind it:
 
