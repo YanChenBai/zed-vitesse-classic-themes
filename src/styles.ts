@@ -65,8 +65,10 @@ export function getStyle(...args: StyleArgs) {
 		'icon.placeholder': color('ignored'),
 		'icon.accent': color('primary'),
 		'status_bar.background': color('background', 'clear'),
-		'title_bar.background': color('background', 'clear'),
-		'title_bar.inactive_background': color('background', 'clear'),
+		// The title bar is drawn above the window background (native caption layer), so it has to
+		// carry the tint itself — transparent here shows the raw, unbrightened backdrop.
+		'title_bar.background': color('background'),
+		'title_bar.inactive_background': color('background'),
 		'toolbar.background': color('activeBackground', 'clear'),
 		'tab_bar.background': color('background', 'clear'),
 		'tab.inactive_background': color('background', 'clear'),
