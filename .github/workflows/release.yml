@@ -52,7 +52,7 @@ jobs:
         run: git push origin HEAD --tags
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: v${{ steps.get_version.outputs.VERSION }}
           tag_name: v${{ steps.get_version.outputs.VERSION }}
@@ -65,10 +65,10 @@ jobs:
 
       - uses: huacnlee/zed-extension-action@v2
         with:
-          extension-name: vitesse-theme-refined
-          push-to: colinlienard/extensions
+          extension-name: vitesse-classic-theme
+          push-to: YanChenBai/extensions
           create-pullrequest: true
-          commit-message: 'Update Vitesse Theme Refined to v${{ steps.get_version.outputs.VERSION }}'
+          commit-message: 'Update Vitesse Theme Classic to v${{ steps.get_version.outputs.VERSION }}'
           tag: v${{ steps.get_version.outputs.VERSION }}
         env:
           COMMITTER_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}

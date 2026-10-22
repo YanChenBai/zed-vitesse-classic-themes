@@ -130,6 +130,11 @@ export const VitesseThemes = {
 	blackActiveBackground: '#121212',
 	blackPunctuation: '#444444',
 
+	// black soft overrides: the black look, one step lighter so it is not as harsh.
+	// foreground and punctuation are inherited from the black variant.
+	blackSoftBackground: '#0d0d0d',
+	blackSoftActiveBackground: '#171717',
+
 	comment: ['#758575dd', '#a0ada0'],
 	string: ['#c98a7d', '#b56959'],
 	variable: ['#bd976a', '#b07d48'],

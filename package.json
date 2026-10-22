@@ -1,11 +1,20 @@
 {
-	"name": "zed-vitesse-theme-refined",
-	"version": "0.5.0",
+	"name": "zed-vitesse-classic-theme",
+	"version": "0.0.1",
+	"description": "Translucent Vitesse themes that better fit Zed",
+	"author": "YanChenBai <bycrxemail@gmail.com>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/YanChenBai/zed-vitesse-classic-themes"
+	},
 	"private": true,
+	"packageManager": "bun@1.4.3",
 	"scripts": {
 		"build": "bun src",
 		"watch": "bun --watch src",
-		"test": "bun test"
+		"test": "bun test",
+		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@types/bun": "^1.3.3",

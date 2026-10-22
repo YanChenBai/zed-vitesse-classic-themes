@@ -1,19 +1,32 @@
 import { VitesseThemes } from './colors';
 
-type StyleArgs = ['dark' | 'light'] | ['dark' | 'light', 'soft' | 'black'];
+export type Appearance = 'dark' | 'light';
+export type Variant = 'soft' | 'black' | 'blackSoft' | 'classic';
+
+type StyleArgs = [Appearance, ...Variant[]];
+
+// Variants that are layered on top of another variant.
+const variantFallbacks: Partial<Record<Variant, Variant>> = { blackSoft: 'black' };
+
+// Alpha applied to the solid background colors in "classic" mode.
+const classicBackgroundAlpha = 'A6';
+
+// "classic" draws a frosted-glass window: `blurred` is macOS vibrancy and Windows acrylic.
+const classicWindowBackground = 'blurred';
 
 export function getStyle(...args: StyleArgs) {
-	const color = colorGetter(...args);
+	const [appearance, ...variants] = args;
+	const color = colorGetter(appearance, variants);
 	return {
 		accents: [color('cyan'), color('green'), color('orange'), color('magenta'), color('yellow')],
-		'background.appearance': 'opaque',
+		'background.appearance': variants.includes('classic') ? classicWindowBackground : 'opaque',
 		border: color('border'),
 		'border.variant': color('border'),
 		'border.focused': color('border'),
 		'border.selected': color('border'),
 		'border.transparent': color('border'),
 		'border.disabled': color('border'),
-		'elevated_surface.background': color('background'),
+		'elevated_surface.background': color('background', 'opaque'),
 		'surface.background': color('background'),
 		background: color('background'),
 		'element.background': color('activeBackground'),
@@ -53,7 +66,7 @@ export function getStyle(...args: StyleArgs) {
 		'panel.indent_guide': color('activeBackground'),
 		'panel.indent_guide_active': color('selectionBackground'),
 		'panel.indent_guide_hover': color('selectionBackground'),
-		'panel.overlay_background': color('background'),
+		'panel.overlay_background': color('background', 'opaque'),
 		'panel.overlay_hover': color('activeBackground'),
 		'pane.focused_border': color('border'),
 		'pane_group.border': color('border'),
@@ -113,9 +126,9 @@ export function getStyle(...args: StyleArgs) {
 		'terminal.bright_foreground': color('foreground'),
 		'terminal.dim_foreground': color('foreground'),
 		'terminal.ansi.background': color('background'),
-		'terminal.ansi.black': args[0] === 'dark' ? color('foreground') : color('background'),
-		'terminal.ansi.bright_black': args[0] === 'dark' ? '#777777' : '#aaaaaa',
-		'terminal.ansi.dim_black': args[0] === 'dark' ? '#777777' : '#aaaaaa',
+		'terminal.ansi.black': appearance === 'dark' ? color('foreground') : color('background'),
+		'terminal.ansi.bright_black': appearance === 'dark' ? '#777777' : '#aaaaaa',
+		'terminal.ansi.dim_black': appearance === 'dark' ? '#777777' : '#aaaaaa',
 		'terminal.ansi.red': color('red'),
 		'terminal.ansi.bright_red': color('red'),
 		'terminal.ansi.dim_red': color('red'),
@@ -195,7 +208,7 @@ export function getStyle(...args: StyleArgs) {
 			{
 				cursor: color('foreground'),
 				background: color('foreground'),
-				selection: args[0] === 'dark' ? '#363636' : '#dcdbd6',
+				selection: appearance === 'dark' ? '#363636' : '#dcdbd6',
 			},
 			{
 				cursor: color('orange'),
@@ -347,21 +360,53 @@ export function getStyle(...args: StyleArgs) {
 	};
 }
 
-function colorGetter(...args: StyleArgs) {
-	return (key: keyof typeof VitesseThemes, style?: 'semi-transparent') => {
-		if (args.length === 2) {
-			const variantKey = args[1] + key[0].toUpperCase() + key.slice(1);
+function colorGetter(appearance: Appearance, variants: Variant[]) {
+	const isClassic = variants.includes('classic');
+	const chain = variants
+		.filter((variant) => variant !== 'classic')
+		.flatMap((variant) => [variantFallbacks[variant], variant])
+		.filter((variant): variant is Variant => Boolean(variant));
+
+	return (key: keyof typeof VitesseThemes, style?: 'semi-transparent' | 'opaque') => {
+		let value = VitesseThemes[key];
+
+		// Overrides always resolve from the original key, so a later variant (e.g. `blackSoft`)
+		// can win over the value supplied by its fallback (`black`).
+		for (const variant of chain) {
+			const variantKey = `${variant}${key[0].toUpperCase()}${key.slice(1)}` as keyof typeof VitesseThemes;
 			if (variantKey in VitesseThemes) {
-				key = variantKey as keyof typeof VitesseThemes;
+				value = VitesseThemes[variantKey];
 			}
 		}
-		const color = VitesseThemes[key];
-		const opacity = style === 'semi-transparent' ? '4D' : '';
-		if (typeof color === 'string') {
-			return color + opacity;
+
+		const color = typeof value === 'string' ? value : value[appearance === 'dark' ? 0 : 1];
+
+		// `opaque` opts a surface out of the classic tint. Floating UI (context menus, popups,
+		// dialogs, the command palette) must stay readable over whatever sits behind the window.
+		if (style === 'opaque') {
+			return color;
 		}
-		return color[args[0] === 'dark' ? 0 : 1] + opacity;
+
+		if (isClassic && (key === 'background' || key === 'activeBackground')) {
+			return withAlpha(color, classicBackgroundAlpha);
+		}
+
+		// `withAlpha` replaces an existing alpha channel instead of appending to it, so colors
+		// that already carry an alpha (e.g. `ignored`) no longer become invalid 10-digit hex.
+		return style === 'semi-transparent' ? withAlpha(color, '4D') : color;
 	};
+}
+
+function withAlpha(hex: string, alpha: string) {
+	const value = hex.replace(/^#/, '');
+	const rgb =
+		value.length === 3
+			? value
+					.split('')
+					.map((char) => char + char)
+					.join('')
+			: value.slice(0, 6);
+	return `#${rgb}${alpha}`;
 }
 
 function syntax(color: string, ...styles: ('bold' | 'italic')[]) {

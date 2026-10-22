@@ -1,7 +1,7 @@
-id = "vitesse-theme-refined"
-name = "Vitesse Theme Refined"
-version = "0.5.0"
+id = "vitesse-classic-theme"
+name = "Vitesse Theme Classic"
+version = "0.0.1"
 schema_version = 1
-authors = ["Colin Lienard <contact@colin-lienard.fr>"]
-description = "Vitesse Theme that better fits Zed"
-repository = "https://github.com/colinlienard/zed-vitesse-theme-refined"
+authors = ["YanChenBai <bycrxemail@gmail.com>", "Colin Lienard <contact@colin-lienard.fr>"]
+description = "Translucent, frosted-glass Vitesse themes that better fit Zed"
+repository = "https://github.com/YanChenBai/zed-vitesse-classic-themes"
