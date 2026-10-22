@@ -9,7 +9,7 @@ type StyleArgs = [Appearance, ...Variant[]];
 const variantFallbacks: Partial<Record<Variant, Variant>> = { blackSoft: 'black' };
 
 // Alpha applied to the solid background colors in "classic" mode.
-const classicBackgroundAlpha = 'A6';
+const classicBackgroundAlpha = '4D';
 
 // "classic" draws a frosted-glass window: `blurred` is macOS vibrancy and Windows acrylic.
 const classicWindowBackground = 'blurred';

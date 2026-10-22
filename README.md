@@ -15,12 +15,12 @@ This fork focuses on **translucency**: every theme is drawn on a blurred, partly
 
 | Theme                        | Appearance | Background      |
 | ---------------------------- | ---------- | --------------- |
-| `Vitesse Classic Dark`       | dark       | `#121212` @ 65% |
-| `Vitesse Classic Dark Soft`  | dark       | `#222222` @ 65% |
-| `Vitesse Classic Black`      | dark       | `#000000` @ 65% |
-| `Vitesse Classic Black Soft` | dark       | `#0d0d0d` @ 65% |
-| `Vitesse Classic Light`      | light      | `#ffffff` @ 65% |
-| `Vitesse Classic Light Soft` | light      | `#f1f0e9` @ 65% |
+| `Vitesse Classic Dark`       | dark       | `#121212` @ 30% |
+| `Vitesse Classic Dark Soft`  | dark       | `#222222` @ 30% |
+| `Vitesse Classic Black`      | dark       | `#000000` @ 30% |
+| `Vitesse Classic Black Soft` | dark       | `#0d0d0d` @ 30% |
+| `Vitesse Classic Light`      | light      | `#ffffff` @ 30% |
+| `Vitesse Classic Light Soft` | light      | `#f1f0e9` @ 30% |
 
 `Vitesse Classic Black Soft` is the pure black theme lifted one step (`#000000` → `#0d0d0d`) so it reads softer on high-contrast displays without drifting into the dark grey of `Dark`.
 
