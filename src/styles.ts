@@ -64,9 +64,9 @@ export function getStyle(...args: StyleArgs) {
 		'icon.disabled': color('ignored'),
 		'icon.placeholder': color('ignored'),
 		'icon.accent': color('primary'),
-		'status_bar.background': color('background', 'clear'),
-		// The title bar is drawn above the window background (native caption layer), so it has to
-		// carry the tint itself — transparent here shows the raw, unbrightened backdrop.
+		// Chrome bars are drawn outside the window background, so they carry the tint themselves —
+		// transparent here shows the raw, untinted backdrop straight through.
+		'status_bar.background': color('background'),
 		'title_bar.background': color('background'),
 		'title_bar.inactive_background': color('background'),
 		'toolbar.background': color('activeBackground', 'clear'),
