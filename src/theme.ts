@@ -18,7 +18,7 @@ const definitions: ThemeDefinition[] = [
 
 export const theme = {
 	$schema: 'https://zed.dev/schema/themes/v0.2.0.json',
-	name: 'Vitesse Theme Classic',
+	name: 'Vitesse Classic Theme',
 	author: 'YanChenBai',
 	themes: definitions.map(({ name, appearance, variants }) => ({
 		name,

@@ -1,13 +1,13 @@
 <div align="center">
 
-# Zed Vitesse Theme Classic
+# Zed Vitesse Classic Theme
 
 ![CI](https://github.com/YanChenBai/zed-vitesse-classic-themes/actions/workflows/ci.yml/badge.svg)
 ![Version](https://badgen.net/github/release/YanChenBai/zed-vitesse-classic-themes)
 
 </div>
 
-Zed Vitesse Theme Classic is a fork of [Zed Vitesse Theme Refined](https://github.com/colinlienard/zed-vitesse-theme-refined), itself a refined port of the [Vitesse theme for VSCode](https://github.com/antfu/vscode-theme-vitesse).
+Zed Vitesse Classic Theme is a fork of [Zed Vitesse Theme Refined](https://github.com/colinlienard/zed-vitesse-theme-refined), itself a refined port of the [Vitesse theme for VSCode](https://github.com/antfu/vscode-theme-vitesse).
 
 This fork focuses on **translucency**: every theme is drawn on a blurred, partly transparent window so your desktop shows through, and a slightly lighter alternative to the pure black theme is included.
 
@@ -101,7 +101,7 @@ What this fork changes:
 - Ships only the translucent rendering and drops the opaque originals.
 - Uses `background.appearance: "blurred"` for a frosted-glass window instead of plain transparency.
 - Adds `Vitesse Classic Black Soft`, a slightly lifted pure-black palette.
-- Renames the extension to `Vitesse Theme Classic`, with a new id and file name, so it can be installed next to the upstream extension without conflicts.
+- Renames the extension to `Vitesse Classic Theme`, with a new id and file name, so it can be installed next to the upstream extension without conflicts.
 
 Upstream copyright and the MIT licence are preserved in [LICENSE](./LICENSE). Anything about the original palettes themselves should be reported to the upstream project.
 
